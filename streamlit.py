@@ -119,7 +119,7 @@ ax_image2 = add_image(
     fdj_cropped, fig, left=0.89, bottom=0.91, width=0.085, height=0.085
 )   # these values might differ when you are plotting
 
-URL2 = "/Users/Federico Rábanos/Downloads/rToIfopo_400x400-modified.png"
+URL2 = "rToIfopo_400x400-modified.png"
 fdj_cropped2 = Image.open(URL2)
 ax_image2 = add_image(
     fdj_cropped2, fig, left=0.92, bottom=0.91, width=0.085, height=0.085
