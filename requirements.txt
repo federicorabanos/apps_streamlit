@@ -1,8 +1,8 @@
 plotly
 pandas
 mplsoccer
-urllib
 matplotlib
 numpy
 PIL
 highlight_text
+urllib.request
