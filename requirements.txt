@@ -3,6 +3,4 @@ pandas
 mplsoccer
 matplotlib
 numpy
-PIL
 highlight_text
-urllib.request
