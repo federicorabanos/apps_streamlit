@@ -113,8 +113,8 @@ fig_text(
 
 fig.text(0.09, 0.92, 'Goleador: Franco Orozco [4] - Más apariciones: Juan Martin Ginzo [17]', size=17, color="#121212", fontproperties=robotto_regular.prop)
 
-URL = "http://www.clublanus.com/resources/img/escudo-lanus.png"
-fdj_cropped = Image.open(urlopen(URL))
+URL = "png-transparent-club-atletico-lanus-superliga-argentina-de-futbol-logo-football-text-logo-sports.png"
+fdj_cropped = Image.open(URL)
 ax_image2 = add_image(
     fdj_cropped, fig, left=0.89, bottom=0.91, width=0.085, height=0.085
 )   # these values might differ when you are plotting
