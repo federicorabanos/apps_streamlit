@@ -4,3 +4,4 @@ mplsoccer
 matplotlib
 numpy
 highlight_text
+json
