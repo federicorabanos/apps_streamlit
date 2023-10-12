@@ -32,7 +32,7 @@ with open("lpf2023_posc.json", "r") as archivo:
 match_day = ["Fecha " + str(num) for num in range(1, 28)]
 
 
-st.set_page_config(page_title="Posiciones de los equipos en la Liga Argentina 2022", page_icon=":bar_chart:", layout="wide")
+st.set_page_config(page_title="Posiciones en el transcurso de la LPF 2023", page_icon=":bar_chart:", layout="wide")
 
 st.sidebar.header("Elegí los equipos:")
 equipos = st.sidebar.multiselect(
