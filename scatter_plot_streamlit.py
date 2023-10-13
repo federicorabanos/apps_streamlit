@@ -14,7 +14,7 @@ from mplsoccer import Pitch
 from PIL import Image
 import os
 
-font_path = "assets/fonts"
+font_path = "scatter_plot/assets/fonts"
 for x in os.listdir(font_path):
     for y in os.listdir(f"{font_path}/{x}"):
         if y.split(".")[-1] == "ttf":
