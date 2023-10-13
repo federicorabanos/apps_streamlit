@@ -26,7 +26,7 @@ colores = {
 URL = 'https://github.com/google/fonts/blob/main/ofl/fjallaone/FjallaOne-Regular.ttf?raw=true'
 robotto_regular = FontManager(URL)
 
-with open("lpf2023_posc.json", "r") as archivo:
+with open("posiciones_torneo/lpf2023_posc.json", "r") as archivo:
     lpf = json.load(archivo)
 
 match_day = ["Fecha " + str(num) for num in range(1, 28)]
@@ -95,7 +95,7 @@ fig_text(
     size=26, fig=fig, fontproperties=robotto_regular.prop
 )
 
-URL2 = "rToIfopo_400x400-modified.png"
+URL2 = "posiciones_torneo/rToIfopo_400x400-modified.png"
 fdj_cropped2 = Image.open(URL2)
 ax_image2 = add_image(
     fdj_cropped2, fig, left=0.92, bottom=0.91, width=0.085, height=0.085
