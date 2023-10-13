@@ -24,5 +24,5 @@ for x in os.listdir(font_path):
             except Exception:
                 continue
 
-plt.style.use("soc_base.mplstyle")
+plt.style.use("scatter_plot/soc_base.mplstyle")
 plt.rcParams['font.family'] = 'Karla'
