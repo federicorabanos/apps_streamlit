@@ -326,7 +326,7 @@ except NameError:
     st.error('Dale, selecciona 2. :point_left:')
 
 img = io.BytesIO()
-plt.savefig(img, format='png')
+plt.savefig(img, format='png', bbox_inches='tight')
 
 btn = st.download_button(
         label="Descarga imagen",
@@ -335,4 +335,4 @@ btn = st.download_button(
         mime="image/png "
       )
 
-matplotlib.pyplot.close()
+plt.close()
