@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "lanusstats",
+  "private_key_id": "c579a52a40fc4ca505aecaa2838615758c3153aa",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDVzLb8N+HLz4Fv\n/vv+RoVV84psLQ0KEi2obTdRmzTyDXZZB6RV3iO0bEzZg3PhERwLx21OWVymq7le\niwSN3vl1rBaszS2HFlFWQcRLnki7LkM8amipEWzgIQ3OtsmLKIcetv4dT1aP+MEM\nelRzBDCwAagNxJWnCbJ7fDmYGsD5vKApCDWzQCrWXTMvNUSntetLkjL1o8n7UCN5\n/b10SrRDcAFDpVgLbpDHAFRpJQPiGGOnyILNBhaaaa+KO6jIEcXdeLtV7trnS+Vb\nfWPyPgSTlTuXtJCsF2x5oBmQvQ07bPCYsgUFxbfgr3X2ROY/IURQ21apiO7+4Bit\nt1e4KSdJAgMBAAECggEAIAuaFb3Ogzzr+rxuStOJIrPpOIOcI7lLzKXqF7o6ulkY\nNwn1MMWl9mIRNr0EPmTRHlba5FZyk6zDkQ8nNJiKLYAIugfa3heTQ2mCIY9s+Vla\nzJBqdYTeG834gtZU6R2++vSUrBH7OIMhdFxVkhO7tHXbGY0wnSPP88BP5aOE7yl3\ndz81+hSn779V+iHsW6vHK671iq75NDKtttj13g6p3aE0HRuBZp9r8dtJQg0fa9fM\nNxVkox2iN8F2AzHe2i2p2KIgTQ1GdbvuqaYnbxXCvOj7Rs7JjlP11+RIGkpjuC7I\nqbMNsoCIFW32k+O4kLOGspAIetBc2pjHp3h7v94EbQKBgQDuPGygfzxZl/xFyEDt\nCLaW6Uusp8b/MQL3ZWcTmyiHWwHOyzx2Od2PcyAbTD2itQJQI+te/KjVHoj1+4f4\nmBEq1G7RKXQFqRIm3z7/3jvaJu1AjOvtDMXgqSn7kkIcsQ+KKdBy9EdbqGSOG/AK\nGNy4CJ7VQCyqZlTXueRh/DDc7wKBgQDlvdYO+t9Av9gPh7394GhcWLvSEtimvjZK\n7Fu/D8UqKfJcUREsMbYMruA4WSx0q70F92CtsOAMdxCa/xt2ieZ91sRpN8aAadDc\n9j3KE2drHfwF/kx5RQ4K/0pO7Bgdbd3i46ShA1YbOVwhynp7CLzqJxE+IBSHpxHT\n4SJw6rQvRwKBgCYw1ZEdFIWgUba2FYJqJSsoFxOEiega6UjTnqSL+QFJ245VEko5\nmIUIhZsaq77LmaVTPMYrZr1Tec1FF1UIu6fMCj/Jj2ng4qIMo8LM03dzShFRBfko\nVQhg1fQYTDThRYZ2kY38DvxokEYfwGk99xQhfaTd9ssSQIOcrznt/b9NAoGBAIj0\nLdMoQkY7FvXLGbtqN0w1qWGF0pkz8vGfDOJM6GBGOTBHM1GBIOFWrlto7VNvvXL9\nESj5s9Y6dC+xvBFiC4Egsl123mJWsifGsvbvskrsyPxZqATy4Xg0z3tUyttgT1Ge\nGtnRP1djTkTmizUk9FkxiNncDeD/+2SvZPSjNV6pAoGBAMyfwjL84ZxrMLwNmXDf\n6kvNlgFkYq6kZ6wwpXF5THBx7QDjusNVuNwFhHHtOfbJLJe7fB1p59L7uDcYc2q9\nvESa8bh9yBQ6PnasmXZsGYkG8xJYnXuqGdfFPkOgPbBf7T4iB29AXtfF7F0+qicx\nELdWnLXOhpSq471hn6fWNxcx\n-----END PRIVATE KEY-----\n",
+  "client_email": "lanusstats@lanusstats.iam.gserviceaccount.com",
+  "client_id": "106727774838096976398",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/lanusstats%40lanusstats.iam.gserviceaccount.com"
+}
