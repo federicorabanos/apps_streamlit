@@ -7,3 +7,4 @@ highlight_text
 pygsheets
 adjustText
 requests
+io

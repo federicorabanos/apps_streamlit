@@ -15,6 +15,7 @@ import requests
 
 from PIL import Image
 import os
+import io
 
 st.set_page_config(page_title="Scatter plots - Liga Argentina", page_icon=":bar_chart:", layout="wide")
 
@@ -324,12 +325,15 @@ except np.core._exceptions.UFuncTypeError as e:
 except NameError:
     st.error('Dale, selecciona 2. :point_left:')
 
-with open("archivo.png", "rb") as file:
-    btn = st.download_button(
-            label="Descarga imagen",
-            data=file,
-            file_name="imagen.png",
-            mime="image/png "
-          )
+fn = 'scatter.png'
+img = io.BytesIO()
+plt.savefig(img, format='png')
+
+btn = st.download_button(
+        label="Descarga imagen",
+        data=file,
+        file_name="imagen.png",
+        mime="image/png "
+      )
 
 matplotlib.pyplot.close()
