@@ -16,12 +16,6 @@ import streamlit as st
 from PIL import Image
 import os
 
-######################
-
-
-
-######################
-
 st.set_page_config(page_title="Scatter plots - Liga Argentina", page_icon=":bar_chart:", layout="wide")
 
 @st.cache_data
