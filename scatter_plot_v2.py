@@ -325,13 +325,12 @@ except np.core._exceptions.UFuncTypeError as e:
 except NameError:
     st.error('Dale, selecciona 2. :point_left:')
 
-fn = 'scatter.png'
 img = io.BytesIO()
 plt.savefig(img, format='png')
 
 btn = st.download_button(
         label="Descarga imagen",
-        data=file,
+        data=img,
         file_name="imagen.png",
         mime="image/png "
       )
