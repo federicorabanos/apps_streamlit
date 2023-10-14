@@ -20,7 +20,7 @@ st.set_page_config(page_title="Scatter plots - Liga Argentina", page_icon=":bar_
 
 @st.cache_data
 def load_data():
-    gc = pygsheets.authorize(service_file='C:/Users/Federico Rábanos/Documents/lanus stats/creds.json')
+    gc = pygsheets.authorize(service_file='scatter_plot/creds.json')
     sheet = gc.open('Data Copa de la Liga 2023 Fbref')
     data = sheet[0].get_as_df()
     data[['Edad', 'Días']] = data['Age'].str.split('-', expand=True).fillna(0).astype('int')
