@@ -286,14 +286,19 @@ estadisticas = st.sidebar.multiselect(
     default=list(data.keys())[0:2]
     )
 
-estadisticas0 = st.sidebar.slider(
-    f'Filtra por {estadisticas[0]}:',
-    float(data[estadisticas[0]].min()), float(data[estadisticas[0]].max()), (float(data[estadisticas[0]].min()), float(data[estadisticas[0]].max())))
+try:
+    estadisticas0 = st.sidebar.slider(
+        f'Filtra por {estadisticas[0]}:',
+        float(data[estadisticas[0]].min()), float(data[estadisticas[0]].max()), (float(data[estadisticas[0]].min()), float(data[estadisticas[0]].max())))
+except IndexError:
+    st.error('Tenes que elegir 2 estadísticas en el filtro. :point_left:')
 
-estadisticas1 = st.sidebar.slider(
-    f'Filtra por {estadisticas[1]}:',
-    float(data[estadisticas[1]].min()), float(data[estadisticas[1]].max()), (float(data[estadisticas[1]].min()), float(data[estadisticas[1]].max())))
-
+try:
+    estadisticas1 = st.sidebar.slider(
+        f'Filtra por {estadisticas[1]}:',
+        float(data[estadisticas[1]].min()), float(data[estadisticas[1]].max()), (float(data[estadisticas[1]].min()), float(data[estadisticas[1]].max())))
+except IndexError:
+    st.error('Tenes que elegir 2 estadísticas en el filtro. :point_left:')
 minutos = None
 minutos = st.sidebar.slider(
     'Filtra por minutos jugados:',
@@ -316,6 +321,8 @@ except IndexError:
     st.error('Tenes que elegir 2 estadísticas en el filtro. :point_left:')
 except np.core._exceptions.UFuncTypeError as e:
     st.error('Elegí una estadística que sea númerica (Squad, Position y esas no son númericas).')
+except NameError:
+    st.error('Dale, selecciona 2. :point_left:')
 
 with open("archivo.png", "rb") as file:
     btn = st.download_button(
