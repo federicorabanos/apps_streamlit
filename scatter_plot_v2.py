@@ -331,3 +331,5 @@ with open("archivo.png", "rb") as file:
             file_name="imagen.png",
             mime="image/png "
           )
+
+matplotlib.pyplot.close()
