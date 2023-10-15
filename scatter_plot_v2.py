@@ -166,6 +166,7 @@ def load_data():
     df_90 = df_90.rename(columns=traduccion)
     return df_total, df_90
 
+@st.cache_data
 def scatter_plot(estadisticas, data, minutos, titulo, tag, per90, estadisticas0, estadisticas1):
     columna1 = estadisticas[0]
     columna2 = estadisticas[1]
