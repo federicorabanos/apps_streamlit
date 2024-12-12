@@ -19,11 +19,13 @@ import io
 
 st.set_page_config(page_title="Scatter plots - La Liga 2", page_icon=":bar_chart:", layout="wide")
 
+@st.cache_data(persist = True)
 def load_data():
     df = pd.read_csv("La Liga 2 - misc - player stats - 2024-12-11.csv")
     df_90 = pd.read_csv("La Liga 2 per 90.csv")
     return df, df_90
 
+@st.cache_data(persist = True)
 def scatter_plot(estadisticas, data, minutos, titulo,  per90, estadisticas0, estadisticas1, jugadores, posiciones):
     columna1 = estadisticas[0]
     columna2 = estadisticas[1]
@@ -96,7 +98,7 @@ def scatter_plot(estadisticas, data, minutos, titulo,  per90, estadisticas0, est
 
     fig_text(
         x = 0.09, y = 0.91, 
-        s = f"Se muestran {cant_jugadores} jugadores con más de {min_jugados} minutos jugados. Estadísticas {tipo_estadisticas}.\nSolo se muestran los jugadores que tienen más de {estadisticas0[0]} {columna1} y más de {estadisticas1[0]} {columna2}.\nVisualización por @LanusStats | La Liga 2",
+        s = f"Se muestran {cant_jugadores} jugadores con más de {min_jugados} minutos jugados. Estadísticas {tipo_estadisticas}.\nSolo se muestran los jugadores que tienen más de {estadisticas0[0]} {columna1} y más de {estadisticas1[0]} {columna2}.\n | La Liga 2",
         va = "bottom", ha = "left",
         fontsize = 13, color = "#5A5A5A", font = "Karla"
     )
@@ -120,9 +122,7 @@ plt.rcParams['font.family'] = 'Karla'
 
 df, df_90 = load_data()
 
-st.title(":bar_chart: Arma tu propio scatter plot de la Copa de la Liga 2023. Por: @LanusStats")
-st.markdown("##")
-st.link_button("Revisa todo mi contenido! Twitter, YouTube y mucho más.", "https://linktr.ee/lanusstats")
+st.title(":bar_chart: Plots La Liga 2")
 
 st.sidebar.header("Filtros que quieras para tu gráfico:")
 
