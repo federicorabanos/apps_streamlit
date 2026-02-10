@@ -7,3 +7,5 @@ highlight_text
 pygsheets
 adjustText
 requests
+undetected-chromedriver
+selenium
