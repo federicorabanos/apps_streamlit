@@ -9,3 +9,4 @@ adjustText
 requests
 undetected-chromedriver
 selenium
+distutils
