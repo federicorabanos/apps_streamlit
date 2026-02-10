@@ -10,3 +10,8 @@ requests
 undetected-chromedriver
 selenium
 setuptools
+bs4
+email
+smtplib
+ast
+json
