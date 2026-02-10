@@ -12,7 +12,7 @@ class SofaAPI:
         self.fake = Faker()
 
     def _get_driver(self):
-        """Inicializa el driver solo cuando se necesita, con opciones para la nube."""
+        """Inicializa el driver forzando la compatibilidad de versión."""
         if self.driver is None:
             options = uc.ChromeOptions()
             options.add_argument('--headless')
@@ -21,8 +21,13 @@ class SofaAPI:
             options.add_argument('--window-size=1920,1080')
             options.add_argument(f'user-agent={self.fake.chrome()}')
             
-            # Sin version_main para que se adapte al Chromium del servidor
-            self.driver = uc.Chrome(options=options)
+            try:
+                # Forzamos la versión 144 que es la que dice el error que tienes
+                self.driver = uc.Chrome(options=options, version_main=144)
+            except Exception:
+                # Si falla, dejamos que intente la detección automática
+                self.driver = uc.Chrome(options=options)
+                
         return self.driver
 
     def sofascore_request(self, path):
