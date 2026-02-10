@@ -32,24 +32,31 @@ class SofaAPI:
         return self.driver
 
     def sofascore_request(self, path):
-        path = path.lstrip("/")
-        url = f"{self.base_url}/{path}"
-        
-        # Obtenemos el driver configurado correctamente
-        driver = self._get_driver()
-        driver.get(url)
-        
-        # Un pequeño delay para no ser bloqueados
-        time.sleep(random.uniform(1.5, 2.5))
-
-        try:
-            soup = BeautifulSoup(driver.page_source, "html.parser")
-            # Sofascore a veces devuelve el JSON dentro de una etiqueta <pre>
-            data = json.loads(soup.text)
-            return data
-        except Exception as e:
-            # Si falla, devolvemos un error para que el script principal no muera
-            return {"error": str(e)}
+            path = path.lstrip("/")
+            url = f"{self.base_url}/{path}"
+            driver = self._get_driver()
+            
+            try:
+                driver.get(url)
+                # Esperamos un poco más para que el contenido cargue
+                time.sleep(random.uniform(2.0, 3.5))
+    
+                # Extraemos el texto crudo del body
+                page_content = driver.find_element(uc.By.TAG_NAME, 'body').text
+                
+                # Si el contenido está vacío, intentamos con BeautifulSoup como plan B
+                if not page_content:
+                    soup = BeautifulSoup(driver.page_source, "html.parser")
+                    page_content = soup.text
+    
+                # Intentamos cargar el JSON
+                data = json.loads(page_content)
+                return data
+                
+            except Exception as e:
+                # Esto aparecerá en los logs de Streamlit para que sepas qué pasó
+                print(f"Error en request a {path}: {str(e)}")
+                return {"error": str(e), "content_preview": page_content[:100] if 'page_content' in locals() else "N/A"}
 
 # Para usarlo en app.py:
 # api = SofaAPI() # Esto ahora es seguro porque no crea el driver hasta que se llama a request
