@@ -10,7 +10,7 @@ requests
 undetected-chromedriver
 selenium
 setuptools
-bs4
+beautifulsoup4
 email
 smtplib
 ast
