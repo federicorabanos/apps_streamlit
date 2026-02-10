@@ -55,18 +55,18 @@ def load_leagues():
         return {}
 
 # --- UI ---
-st.title("🚨 Scouting System - Alertas U21")
+st.title("🚨 Scouting System - Alertas de jugadores")
 leagues_config = load_leagues()
 
 with st.sidebar:
     sel_leagues = st.multiselect("Ligas:", list(leagues_config.keys()))
     num_fechas = st.number_input("Fechas atrás:", 1, 10, 3)
-    age_max = st.slider("Edad Máxima:", 15, 25, 21)
+    age_max = st.slider("Edad Máxima:", 15, 45, 21)
     min_diff = st.number_input("Rating Diff mín.:", 0.0, 5.0, 0.5)
     pos_filter = st.multiselect("Posiciones:", ["G", "D", "M", "F"], default=["D", "M", "F"])
     target_mail = st.text_input("Enviar a:", "federabanos@gmail.com")
 
-if st.button("🚀 Iniciar Scouting"):
+if st.button("🚀 Iniciar proceso de scouting"):
     if not sel_leagues:
         st.warning("Selecciona ligas.")
     else:

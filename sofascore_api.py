@@ -38,7 +38,7 @@ class SofaAPI:
         try:
             driver.get(url)
             # Tiempo de espera humano para evitar bloqueos
-            time.sleep(random.uniform(2.0, 3.5))
+            time.sleep(random.uniform(1, 2.5))
 
             # Intentamos obtener el texto del body directamente
             page_content = driver.find_element(uc.By.TAG_NAME, 'body').text
