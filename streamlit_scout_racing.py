@@ -8,34 +8,24 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 from sofascore_api import SofaAPI
-from functools import lru_cache
 
-# --- CONFIGURACIÓN DE PÁGINA ---
-st.set_page_config(page_title="Scouting Alerts", page_icon="⚽", layout="wide")
+# --- CONFIGURACIÓN ---
+st.set_page_config(page_title="Scouting System", page_icon="⚽", layout="wide")
 
-# --- FUNCIONES DE APOYO (HELPERS) ---
 def parse_birth_and_age(ts):
-    if pd.isna(ts):
-        return pd.Series([pd.NaT, None])
+    if pd.isna(ts): return pd.Series([pd.NaT, None])
     try:
-        birth_date = pd.to_datetime(ts, unit="s", errors="coerce")
-        if pd.isna(birth_date):
-            return pd.Series([pd.NaT, None])
-        today = pd.Timestamp("today").normalize()
-        age = today.year - birth_date.year - (
-            (today.month, today.day) < (birth_date.month, birth_date.day)
-        )
-        return pd.Series([birth_date, age])
-    except Exception:
-        return pd.Series([pd.NaT, None])
+        birth_date = pd.to_datetime(ts, unit="s")
+        age = (pd.Timestamp.now() - birth_date).days // 365
+        return pd.Series([birth_date.date(), age])
+    except: return pd.Series([pd.NaT, None])
 
-def send_email_with_attachment(subject, body, to_email, csv_path, user_email, app_password):
+def send_email(subject, body, to_email, csv_path):
+    user_email = "federabanos@gmail.com"
+    app_password = "kcktfqcsfuzwkuar"
     msg = MIMEMultipart()
-    msg["From"] = user_email
-    msg["To"] = to_email
-    msg["Subject"] = subject
+    msg["From"], msg["To"], msg["Subject"] = user_email, to_email, subject
     msg.attach(MIMEText(body, "plain"))
-
     try:
         with open(csv_path, "rb") as f:
             part = MIMEBase("application", "octet-stream")
@@ -43,186 +33,99 @@ def send_email_with_attachment(subject, body, to_email, csv_path, user_email, ap
             encoders.encode_base64(part)
             part.add_header("Content-Disposition", f'attachment; filename="{csv_path}"')
             msg.attach(part)
-
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(user_email, app_password)
             server.send_message(msg)
         return True
-    except Exception as e:
-        st.error(f"Error al enviar el email: {e}")
-        return False
+    except: return False
 
 @st.cache_data
-def load_league_data():
-    # 1. Verificar nombre exacto del archivo
-    file_name = 'sofascore_leagues.json'
-    
+def load_leagues():
     try:
-        # Abrimos con utf-8 para evitar el error de charmap (0x9d) que mencionaste antes
-        with open(file_name, 'r', encoding='utf-8', errors='replace') as f:
+        with open('sofascore_leagues.json', 'r', encoding='utf-8', errors='replace') as f:
             data = json.load(f)
-        
-        processed_leagues = {}
-        
-        for league_name, info in data.items():
-            try:
-                # El campo 'seasons' viene como string: "[{'id': 1, ...}]"
-                # ast.literal_eval es sensible a valores como 'null' o 'true' de JS.
-                # Como tu string viene de un dump de Python, debería tener 'False' o 'None'.
-                
-                raw_seasons = info.get('seasons', '[]')
-                
-                # Limpieza de seguridad por si hay caracteres raros
-                clean_seasons = raw_seasons.replace('\xa0', ' ').strip()
-                
-                seasons_list = ast.literal_eval(clean_seasons)
-                
-                if isinstance(seasons_list, list) and len(seasons_list) > 0:
-                    first_season = seasons_list[0]
-                    processed_leagues[league_name] = {
-                        "id_liga": info.get('id'),
-                        "id_temporada": first_season.get('id'),
-                        "year": first_season.get('year')
-                    }
-            except Exception as e_inner:
-                # Si una liga falla, que siga con las demás
-                continue
-                
-        if not processed_leagues:
-            st.error("El archivo se leyó pero no se pudo procesar ninguna liga. Revisa el formato interno.")
-            
-        return processed_leagues
-
-    except FileNotFoundError:
-        st.error(f"❌ No se encontró el archivo: {file_name}. Asegúrate de que esté subido a GitHub en la raíz.")
-        return {}
-    except json.JSONDecodeError as e:
-        st.error(f"❌ Error de formato JSON: El archivo tiene una coma o paréntesis mal puesto. Detalle: {e}")
-        return {}
+        leagues = {}
+        for k, v in data.items():
+            seasons = ast.literal_eval(v['seasons'])
+            if seasons:
+                leagues[k] = {"id": v['id'], "season_id": seasons[0]['id']}
+        return leagues
     except Exception as e:
-        st.error(f"❌ Error inesperado: {e}")
+        st.error(f"Error cargando JSON: {e}")
         return {}
-# --- INTERFAZ DE USUARIO ---
-st.title("🚨 Alertas de Jugadores")
 
-leagues_config = load_league_data()
+# --- UI ---
+st.title("🚨 Scouting System - Alertas U21")
+leagues_config = load_leagues()
 
 with st.sidebar:
-    st.header("1. Configuración")
-    seleccionadas = st.multiselect("Ligas a analizar:", options=list(leagues_config.keys()))
-    num_rondas = st.number_input("Cantidad de fechas a analizar (hacia atrás):", min_value=1, max_value=10, value=3)
-    
-    st.divider()
-    st.header("2. Filtros de Scouting")
-    age_limit = st.slider("Edad Máxima", 15, 40, 21)
-    rating_diff_limit = st.number_input("Rating Diff Team mín.", 0.0, 5.0, 0.5, step=0.1)
-    posiciones_filtro = st.multiselect("Filtrar por Posición:", options=["G", "D", "M", "F"], default=["G", "D", "M", "F"])
-    
-    st.divider()
-    st.header("3. Destinatario")
-    target_email = st.text_input("Email de destino", "federabanos@gmail.com")
+    sel_leagues = st.multiselect("Ligas:", list(leagues_config.keys()))
+    num_fechas = st.number_input("Fechas atrás:", 1, 10, 3)
+    age_max = st.slider("Edad Máxima:", 15, 25, 21)
+    min_diff = st.number_input("Rating Diff mín.:", 0.0, 5.0, 0.5)
+    pos_filter = st.multiselect("Posiciones:", ["G", "D", "M", "F"], default=["D", "M", "F"])
+    target_mail = st.text_input("Enviar a:", "federabanos@gmail.com")
 
-# --- EJECUCIÓN ---
-if st.button("🚀 Iniciar Proceso de Scouting"):
-    if not seleccionadas:
-        st.warning("Selecciona al menos una liga.")
+if st.button("🚀 Iniciar Scouting"):
+    if not sel_leagues:
+        st.warning("Selecciona ligas.")
     else:
         sofa = SofaAPI()
         df_total = pd.DataFrame()
         
-        with st.status("🔍 Corriendo el proceso...", expanded=True) as status:
-            progreso = st.progress(0)
-            log_ejecucion = st.empty()
-
-        for idx, nombre_liga in enumerate(seleccionadas):
-                liga_info = leagues_config[nombre_liga]
-                id_liga, id_temporada = liga_info['id_liga'], liga_info['id_temporada']
+        with st.status("🔍 Procesando...", expanded=True) as status:
+            log = st.empty()
+            for idx, liga in enumerate(sel_leagues):
+                info = leagues_config[liga]
+                res_fechas = sofa.sofascore_request(f"/unique-tournament/{info['id']}/season/{info['season_id']}/rounds")
                 
-                # Llamada a la API
-                fechas = sofa.sofascore_request(f"/unique-tournament/{id_liga}/season/{id_temporada}/rounds")
-                
-                # Verificamos si la respuesta tiene la estructura esperada
-                if isinstance(fechas, dict) and 'currentRound' in fechas:
-                    fecha_actual = fechas['currentRound']['round']
-                else:
-                    # Si llegamos aquí, mostramos el error real en la consola/pantalla
-                    error_msg = fechas.get('error', 'Formato JSON inesperado')
-                    st.toast(f"⚠️ {nombre_liga}: {error_msg}", icon="❌")
-                    continue
+                if 'currentRound' not in res_fechas: continue
+                curr = res_fechas['currentRound']['round']
 
-                for r in range(0, num_rondas):
-                    ronda_a_procesar = fecha_actual - r
-                    if ronda_a_procesar <= 0: break
+                for r in range(num_fechas):
+                    rd = curr - r
+                    if rd <= 0: break
                     
-                    log_ejecucion.markdown(f"⚽ **Liga:** {nombre_liga} | 📅 **Ronda:** {ronda_a_procesar}")
+                    data_rd = sofa.sofascore_request(f"/unique-tournament/{info['id']}/season/{info['season_id']}/events/round/{rd}")
+                    if 'events' not in data_rd or not data_rd['events']: continue
                     
-                    data_fecha = sofa.sofascore_request(f"/unique-tournament/{id_liga}/season/{id_temporada}/events/round/{ronda_a_procesar}")
-                    if not data_fecha or not data_fecha.get("events"): continue
+                    # Fecha del partido
+                    f_ts = data_rd['events'][0]['startTimestamp']
+                    f_date = pd.to_datetime(f_ts, unit='s').date()
+                    log.markdown(f"🏟️ **{liga}** | Ronda {rd} ({f_date})")
 
-                    ids_partidos = [e['id'] for e in data_fecha['events']]
-                    fecha_timestamp = data_fecha['events'][0]['startTimestamp']
-                    fecha_legible = pd.to_datetime(fecha_timestamp, unit='s').date()
-
-                    for partido in ids_partidos:
-                        data_partido = sofa.sofascore_request(f"/event/{partido}/lineups")
-                        if not data_partido or "error" in data_partido: continue
+                    for ev in data_rd['events']:
+                        lineups = sofa.sofascore_request(f"/event/{ev['id']}/lineups")
+                        if 'home' not in lineups: continue
 
                         for side in ['home', 'away']:
-                            try:
-                                players_raw = data_partido[side]['players']
-                                side_df = pd.concat([
-                                    pd.DataFrame(players_raw),
-                                    pd.DataFrame(players_raw).player.apply(pd.Series)
-                                ], axis=1)
+                            players = lineups[side]['players']
+                            pdf = pd.concat([pd.DataFrame(players), pd.DataFrame(players).player.apply(pd.Series)], axis=1)
+                            pdf = pdf.loc[:, ~pdf.columns.duplicated()]
+                            
+                            if 'statistics' not in pdf.columns: continue
+                            
+                            pdf['rating'] = pdf['statistics'].apply(lambda x: x.get('rating') if isinstance(x, dict) else None)
+                            pdf['rating_diff_team'] = pdf['rating'] - pdf['rating'].mean()
+                            pdf['birth_country'] = pdf['country'].apply(lambda x: x.get('name') if isinstance(x, dict) else None)
+                            pdf[['birth_date', 'age']] = pdf['dateOfBirthTimestamp'].apply(parse_birth_and_age)
+                            pdf['fecha_partido'], pdf['id_league'] = f_date, liga
+                            df_total = pd.concat([df_total, pdf], axis=0)
 
-                                if "statistics" not in side_df.columns: continue
+            status.update(label="✅ Análisis completo", state="complete", expanded=False)
 
-                                side_df["rating"] = side_df["statistics"].apply(lambda x: x.get("rating") if isinstance(x, dict) else None)
-                                side_df['rating_diff_team'] = side_df['rating'] - side_df['rating'].mean()
-                                side_df = side_df.loc[:, ~side_df.columns.duplicated()]
-                                
-                                # Columnas adicionales pedidas
-                                side_df["birth_country"] = side_df["country"].apply(lambda x: x.get("name") if isinstance(x, dict) else None)
-                                side_df[["birth_date", "age"]] = side_df["dateOfBirthTimestamp"].apply(parse_birth_and_age)
-                                side_df['id_league'] = nombre_liga
-                                side_df['fecha_partido'] = fecha_legible
-                                
-                                df_total = pd.concat([df_total, side_df], axis=0)
-                            except:
-                                continue
-
-                progreso.progress((idx + 1) / len(seleccionadas))
-            status.update(label="✅ Extracción finalizada", state="complete", expanded=False)
-
-        # --- FILTRADO FINAL ---
         if not df_total.empty:
-            # Filtro por edad, rating y posiciones elegidas
-            alerts_df = df_total[
-                (df_total["age"] < age_limit) & 
-                (df_total["rating_diff_team"] > rating_diff_limit) &
-                (df_total["position"].isin(posiciones_filtro))
-            ].drop_duplicates(subset=['id'])
-
-            if not alerts_df.empty:
-                st.subheader(f"📊 Prospectos Encontrados ({len(alerts_df)})")
+            filt = df_total[(df_total['age'] < age_max) & 
+                            (df_total['rating_diff_team'] > min_diff) & 
+                            (df_total['position'].isin(pos_filter))].drop_duplicates(subset=['id'])
+            
+            if not filt.empty:
+                st.balloons()
+                cols = ["fecha_partido", "name", "age", "position", "rating", "rating_diff_team", "birth_country", "id_league"]
+                st.dataframe(filt[cols], use_container_width=True)
                 
-                # Definimos columnas a mostrar
-                cols_to_show = ["name", "age", "position", "fecha_partido", "rating", "rating_diff_team", "birth_country", "id_league"]
-                st.dataframe(alerts_df[cols_to_show], use_container_width=True)
-
-                with st.spinner("📧 Enviando reporte..."):
-                    csv_path = "alerts_scouting.csv"
-                    alerts_df.to_csv(csv_path, index=False)
-                    send_email_with_attachment(
-                        "🚨 Reporte Scouting U21",
-                        f"Se adjuntan los {len(alerts_df)} jugadores filtrados.",
-                        target_email,
-                        csv_path,
-                        st.secrets["EMAIL_USER"],
-                        st.secrets["EMAIL_PASS"]
-                    )
-                st.success(f"Reporte enviado a {target_email}")
+                filt.to_csv("alerts.csv", index=False)
+                if send_email("🚨 Reporte Scouting", f"Detectados {len(filt)} jugadores.", target_mail, "alerts.csv"):
+                    st.success("📧 Email enviado.")
             else:
-                st.info("No hay jugadores que coincidan con los filtros de búsqueda.")
-        else:
-            st.error("No se pudo obtener data de las ligas seleccionadas.")
+                st.info("Sin resultados para los filtros.")
