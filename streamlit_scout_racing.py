@@ -134,16 +134,20 @@ if st.button("🚀 Iniciar Proceso de Scouting"):
             progreso = st.progress(0)
             log_ejecucion = st.empty()
 
-            for idx, nombre_liga in enumerate(seleccionadas):
+        for idx, nombre_liga in enumerate(seleccionadas):
                 liga_info = leagues_config[nombre_liga]
-                id_liga = liga_info['id_liga']
-                id_temporada = liga_info['id_temporada']
+                id_liga, id_temporada = liga_info['id_liga'], liga_info['id_temporada']
                 
-                try:
-                    fechas = sofa.sofascore_request(f"/unique-tournament/{id_liga}/season/{id_temporada}/rounds")
+                # Llamada a la API
+                fechas = sofa.sofascore_request(f"/unique-tournament/{id_liga}/season/{id_temporada}/rounds")
+                
+                # Verificamos si la respuesta tiene la estructura esperada
+                if isinstance(fechas, dict) and 'currentRound' in fechas:
                     fecha_actual = fechas['currentRound']['round']
-                except:
-                    st.toast(f"Error en liga {nombre_liga}", icon="⚠️")
+                else:
+                    # Si llegamos aquí, mostramos el error real en la consola/pantalla
+                    error_msg = fechas.get('error', 'Formato JSON inesperado')
+                    st.toast(f"⚠️ {nombre_liga}: {error_msg}", icon="❌")
                     continue
 
                 for r in range(0, num_rondas):
