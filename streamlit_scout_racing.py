@@ -184,8 +184,8 @@ if st.button("🚀 Iniciar Proceso de Scouting"):
                         f"Se adjuntan los {len(alerts_df)} jugadores filtrados.",
                         target_email,
                         csv_path,
-                        "federabanos@gmail.com",
-                        "kcktfqcsfuzwkuar"
+                        st.secrets["EMAIL_USER"],
+                        st.secrets["EMAIL_PASS"]
                     )
                 st.success(f"Reporte enviado a {target_email}")
             else:
