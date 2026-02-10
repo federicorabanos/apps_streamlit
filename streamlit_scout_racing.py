@@ -54,24 +54,54 @@ def send_email_with_attachment(subject, body, to_email, csv_path, user_email, ap
 
 @st.cache_data
 def load_league_data():
+    # 1. Verificar nombre exacto del archivo
+    file_name = 'sofascore_leagues.json'
+    
     try:
-        with open('sofascore_leagues.json', 'r', encoding='utf-8') as f:
+        # Abrimos con utf-8 para evitar el error de charmap (0x9d) que mencionaste antes
+        with open(file_name, 'r', encoding='utf-8', errors='replace') as f:
             data = json.load(f)
+        
         processed_leagues = {}
+        
         for league_name, info in data.items():
-            seasons_list = ast.literal_eval(info['seasons'])
-            if seasons_list:
-                first_season = seasons_list[0]
-                processed_leagues[league_name] = {
-                    "id_liga": info['id'],
-                    "id_temporada": first_season['id'],
-                    "year": first_season['year']
-                }
+            try:
+                # El campo 'seasons' viene como string: "[{'id': 1, ...}]"
+                # ast.literal_eval es sensible a valores como 'null' o 'true' de JS.
+                # Como tu string viene de un dump de Python, debería tener 'False' o 'None'.
+                
+                raw_seasons = info.get('seasons', '[]')
+                
+                # Limpieza de seguridad por si hay caracteres raros
+                clean_seasons = raw_seasons.replace('\xa0', ' ').strip()
+                
+                seasons_list = ast.literal_eval(clean_seasons)
+                
+                if isinstance(seasons_list, list) and len(seasons_list) > 0:
+                    first_season = seasons_list[0]
+                    processed_leagues[league_name] = {
+                        "id_liga": info.get('id'),
+                        "id_temporada": first_season.get('id'),
+                        "year": first_season.get('year')
+                    }
+            except Exception as e_inner:
+                # Si una liga falla, que siga con las demás
+                continue
+                
+        if not processed_leagues:
+            st.error("El archivo se leyó pero no se pudo procesar ninguna liga. Revisa el formato interno.")
+            
         return processed_leagues
-    except Exception as e:
-        st.error(f"Error cargando ligas.json: {e}")
-        return {}
 
+    except FileNotFoundError:
+        st.error(f"❌ No se encontró el archivo: {file_name}. Asegúrate de que esté subido a GitHub en la raíz.")
+        return {}
+    except json.JSONDecodeError as e:
+        st.error(f"❌ Error de formato JSON: El archivo tiene una coma o paréntesis mal puesto. Detalle: {e}")
+        return {}
+    except Exception as e:
+        st.error(f"❌ Error inesperado: {e}")
+        return {}
 # --- INTERFAZ DE USUARIO ---
 st.title("🚨 Alertas de Jugadores")
 
