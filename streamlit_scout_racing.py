@@ -99,6 +99,14 @@ for g in group_sel:
 
 sel_leagues_expandidas = sorted(expanded_leagues)
 
+if sel_leagues_expandidas:
+    st.caption(
+        "🔎 **Ligas incluidas en el análisis:** " +
+        ", ".join(sel_leagues_expandidas)
+    )
+else:
+    st.caption("No hay ligas seleccionadas todavía.")
+
 if st.button("🚀 Iniciar proceso de scouting"):
     if not sel_leagues_expandidas:
         st.warning("Selecciona ligas.")
