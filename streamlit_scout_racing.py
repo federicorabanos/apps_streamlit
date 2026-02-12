@@ -74,7 +74,7 @@ LEAGUE_GROUPS = {
     "Escandinavia": ["Norway Eliteserien", "Norway Norwegian 1st Division", "Denmark Danish Superliga", "Denmark Betinia Liga", "Finland Veikkausliiga", "Sweden Allsvenskan"],
     "Sudamerica": ["Argentina Liga Profesional de Fútbol", "Argentina Primera Nacional", "Brazil Brasileirão Betano", "Brazil Brasileirão Série B", "Uruguay Liga AUF Uruguaya", "Colombia Primera A, Apertura", "Chile Liga de Primera", "Ecuador LigaPro Serie A"],
     "Top 5 Europa": ["England Premier League", "Spain La Liga", "Germany Bundesliga", "Italy Serie A", "France Ligue 1"],
-    "Fuera top 5": ["Portugal Primeira Liga", "Netherlands Eredivisie", "Belgium Jupiler Pro League", "Croatia HNL", "Czech Republic Czech First League"]
+    "Fuera top 5": ["Portugal Liga Portugal Betclic", "Netherlands VriendenLoterij Eredivisie", "Belgium Pro League", "Croatia HNL", "Czech Republic Czech First League"]
 }
 
 with st.sidebar:
