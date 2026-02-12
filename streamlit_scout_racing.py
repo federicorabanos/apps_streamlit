@@ -163,7 +163,6 @@ if st.button("🚀 Iniciar proceso de scouting"):
                             (df_total['value'] <= value_max)]
             
             if not filt.empty:
-                st.balloons()
                 cols = ["fecha_partido", "name", "age", "value","position", "rating", "rating_diff_team", "birth_country","id_league"]
                 st.dataframe(filt[cols], use_container_width=True)
                 
