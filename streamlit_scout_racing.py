@@ -85,6 +85,8 @@ with st.sidebar:
     value_max = st.number_input("Valor de mercado:", 0, 100000000, 1500000)
     min_diff = st.number_input("Rating Diff mín.:", 0.0, 5.0, 0.5)
     pos_filter = st.multiselect("Posiciones:", ["G", "D", "M", "F"], default=["D", "M", "F"])
+    max_mins = st.number_input("Minutos totales jugados:", 0.0, 100000.0, 6000.0)
+    max_apps = st.number_input("Apariciones totales:", 0.0, 100000.0, 100.0)
     target_mail = st.text_input("Enviar a:", "federabanos@gmail.com")
 
 # Partimos de las ligas elegidas manualmente
@@ -161,13 +163,56 @@ if st.button("🚀 Iniciar proceso de scouting"):
                             (df_total['rating_diff_team'] >= min_diff) & 
                             (df_total['position'].isin(pos_filter)) &
                             (df_total['value'] <= value_max)]
-            
+
             if not filt.empty:
-                cols = ["fecha_partido", "name", "age", "value","position", "rating", "rating_diff_team", "birth_country","id_league"]
+                # 2. Inicializamos las columnas antes del bucle
+                filt['total_minutos'] = 0
+                filt['total_apariciones'] = 0
+                filt['rating_mean'] = 0
+
+                ids_players = filt['id'].unique()
+                
+                # Usamos un nuevo status para ver el progreso de los jugadores
+                with st.status("🔍 Consultando historial de jugadores...", expanded=True) as status_player:
+                    progress_text = st.empty()
+                    
+                    for i, id_player in enumerate(ids_players):
+                        progress_text.markdown(f"Procesando jugador {i+1} de {len(ids_players)} (ID: {id_player})")
+                        
+                        # Petición a la API
+                        data_player = sofa.sofascore_request(f"player/{id_player}/statistics/match-type/overall")
+                        
+                        if data_player:
+                            # --- FILTRO POR DOMESTIC-CUP ---
+                            # Aquí filtramos solo los diccionarios que sean copas domésticas
+                            #stats_cup = [p for p in data_player if p.get("uniqueTournament", {}).get("competitionType") == "domestic-cup"]
+                            
+                            # Sumamos sobre la lista filtrada
+                            seasons_list = data_player.get('seasons', [])
+                            total_minutos = sum(p.get("statistics", {}).get("minutesPlayed", 0) for p in seasons_list)
+                            total_apariciones = sum(p.get("statistics", {}).get("appearances", 0) for p in seasons_list)
+                            ratings = [p.get("statistics", {}).get("rating") for p in seasons_list if p.get("statistics", {}).get("rating")]
+                            if ratings:
+                                mean_rating = sum(ratings) / len(ratings)
+                            else:
+                                mean_rating = 0  # O None, si prefieres
+
+                            # Asignamos al DataFrame usando .loc
+                            filt.loc[filt['id'] == id_player, 'total_minutos'] = total_minutos
+                            filt.loc[filt['id'] == id_player, 'total_apariciones'] = total_apariciones
+                            filt.loc[filt['id'] == id_player, 'rating_mean'] = mean_rating
+                    
+                    status_player.update(label="✅ Historial cargado", state="complete", expanded=False)
+
+                filt = filt[(filt['total_minutos'] <= max_mins) &
+                            filt['total_apariciones'] <= max_apps]
+
+                # 3. Mostrar resultados finales
+                cols = ["fecha_partido", "name", "age", "value", "position", "rating", "rating_diff_team", "birth_country", "id_league", "total_minutos", "total_apariciones", 'rating_mean']
                 st.dataframe(filt[cols], use_container_width=True)
                 
                 filt.to_csv("alerts.csv", index=False)
                 if send_email("🚨 Reporte Scouting", f"Detectados {len(filt)} jugadores.", target_mail, "alerts.csv"):
                     st.success("📧 Email enviado.")
             else:
-                st.info("Sin resultados para los filtros.")
+                st.info("No hay jugadores que cumplan los filtros de edad/rating/valor.")
